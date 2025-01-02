@@ -1,19 +1,20 @@
-# This is my package chativel
+# ChatiVel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/ehsan-nosair/chativel.svg?style=flat-square)](https://packagist.org/packages/ehsan-nosair/chativel)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/ehsan-nosair/chativel/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/ehsan-nosair/chativel/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/ehsan-nosair/chativel/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/ehsan-nosair/chativel/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/ehsan-nosair/chativel.svg?style=flat-square)](https://packagist.org/packages/ehsan-nosair/chativel)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+real-time chat system for laravel & filament. 
 
-## Support us
+- support multi gurad
+- support rtl
+- languages (en, ar)
+- using laravel broadcasting so you can use (reverb, pusher) 
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/chativel.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/chativel)
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+> [!IMPORTANT]
+> the package is still in development stage
 
 ## Installation
 
@@ -23,38 +24,105 @@ You can install the package via composer:
 composer require ehsan-nosair/chativel
 ```
 
-You can publish and run the migrations with:
+Run this command to install the package, it will publish config file and migrations 
 
 ```bash
-php artisan vendor:publish --tag="chativel-migrations"
-php artisan migrate
+php artisan chativel:install
 ```
 
-You can publish the config file with:
+### Following steps just if you want to add the chat page to filament panel
+
+Run this command to copy assets to public folder
 
 ```bash
-php artisan vendor:publish --tag="chativel-config"
+php artisan filament:assets
 ```
 
-This is the contents of the published config file:
+You need to use 'filament custom theme' [create custom theme](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme).
+Then add following line to your theme `tailwind.config.js` file.
 
+```js
+content: [
+    ...
+    './vendor/ehsan-nosair/chativel/resources/views/**/**/*.blade.php',
+    ...
+]
+```
+
+> this package use laravel broadcasting so you need to install it. use following command
+
+```bash
+php artisan install:broadcasting
+```
+
+then if you want to use it in a filament panel then you need to enable echo in `config/filament` like following for `reverb`
 ```php
-return [
-];
+// ...
+ 
+'echo' => [
+    'broadcaster' => 'reverb',
+    'key' => env('VITE_REVERB_APP_KEY'),
+    'cluster' => env('VITE_REVERB_APP_CLUSTER'),
+    'wsHost' => env('VITE_REVERB_HOST'),
+    'wsPort' => env('VITE_REVERB_PORT'),
+    'wssPort' => env('VITE_REVERB_PORT'),
+    'authEndpoint' => '/broadcasting/auth',
+    'disableStats' => true,
+    'encrypted' => true,
+    'forceTLS' => false,
+],
+ 
+// ...
 ```
 
-Optionally, you can publish the views using
-
+then start reverb server:
 ```bash
-php artisan vendor:publish --tag="chativel-views"
+php artisan reverb:start
 ```
 
 ## Usage
 
+First: you need to use `Chatable` trait in your models
 ```php
-$chativel = new EhsanNosair\Chativel();
-echo $chativel->echoPhrase('Hello, EhsanNosair!');
+<?php
+
+use EhsanNosair\Chativel\Traits\Chatable;
+
+class User extends Authenticatable
+{
+    use Chatable;
+}
 ```
+> [!NOTE]
+> you can customize model searchable columns & display column by overriting searchableColumns() & getDisplayColumnAttribute() methods
+
+Second: you need to add your chatable models to chatables array in `config/chativel`
+```php
+    <?php
+    // ...
+    'chatables' => [
+        \App\Models\User::class,
+    ],
+    // ...
+```
+
+Final step: use plusing in your filament panel provider
+```php
+<?php
+
+use EhsanNosair\Chativel\ChativelPlugin;
+
+class AdminPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            //...
+            ->plugins([
+                ChativelPlugin::make()
+            ]);
+    }
+}
 
 ## Testing
 

@@ -1,0 +1,14 @@
+{
+    "Conversations" : "المحادثات",
+    "New Conversation" : "محادثة جديدة",
+    "no matching results found" : "لم يتم العثور على نتائج مطابقة.",
+    "Search..." : "بحث...",
+    "no conversations yet" : "لا يوجد محادثات حتى الان",
+    "New message" : "رسالة جديدة",
+    "Type a message..." : "اكتب رسالة...",
+    "Empty message cannot be sent." : "لا يمكن إرسال رسالة فارغة",
+    "select a conversation to start messaging" : "حدد محادثة لبدء المراسلة",
+    "Online" : "متصل",
+    "Last seen" : "آخر ظهور",
+    "Yesterday" : "البارحة"
+}
