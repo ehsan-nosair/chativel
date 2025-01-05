@@ -1,6 +1,6 @@
 {
     "name": "ehsan-nosair/chativel",
-    "description": "This is my package chativel",
+    "description": "ChatiVel is a plugin that provides a real-time chat system for your laravel application, its support multi-guards, rtl, reverb-pusher, RESTapi, and much more.",
     "keywords": [
         "ehsan-nosair",
         "laravel",
