@@ -69,7 +69,7 @@
                     @endphp
 
                     <div class="flex justify-{{ $alignment}} items-end mb-2 gap-2">
-                        <div class="max-w-md p-2 rounded-xl {{ $bgColor }}">
+                        <div class="max-w-md p-2 rounded-xl {{ $bgColor }} {{ $fromCurrent ? 'CURRENT-MSG-BOX':'OTHER-MSG-BOX' }}">
                             @php
                                 $images = $message->getMedia('image');
                                 $files = $message->getMedia('file');
@@ -96,9 +96,9 @@
                                             <x-filament::icon icon="heroicon-m-paper-clip" class="w-4 h-4" />
                                         </div>
                                         <div>
-                                            <p class="text-sm truncate overflow-hidden whitespace-nowrap {{ $textColor }}" style="width: 235px">{{ $media->file_name }}</p>
+                                            <p class="text-sm truncate overflow-hidden whitespace-nowrap" style="width: 235px">{{ $media->file_name }}</p>
                                             <div class="flex gap-2 items-center">
-                                                <p class="text-sm {{ $textColor }}">{{ $media->human_readable_size }}</p>
+                                                <p class="text-sm">{{ $media->human_readable_size }}</p>
                                                 <x-filament::icon icon="heroicon-m-arrow-down-tray" class="w-4 h-4 hidden group-hover:block" />
                                             </div>
                                         </div>

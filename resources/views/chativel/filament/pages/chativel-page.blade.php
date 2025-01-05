@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div x-data="{ isChatsbarOpen: true }" class="flex"
+    <div x-data="{ isChatsbarOpen: true }" class="flex CHATIVEL"
     x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref('chativel-styles', package: 'ehsan-nosair/chativel'))]">
         
         <div class="relative w-full overflow-hidden">
