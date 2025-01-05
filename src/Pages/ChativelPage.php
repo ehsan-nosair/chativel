@@ -33,7 +33,7 @@ class ChativelPage extends Page
         return __(config('chativel.navigation_label'));
     }
 
-    public static function getNavigationIcon(): string | Htmlable | null
+    public static function getNavigationIcon(): string
     {
         return config('chativel.navigation_icon');
     }
