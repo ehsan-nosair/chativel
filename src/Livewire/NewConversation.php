@@ -2,13 +2,14 @@
 
 namespace EhsanNosair\Chativel\Livewire;
 
-use Livewire\Component;
 use EhsanNosair\Chativel\Facades\Chativel;
 use EhsanNosair\Chativel\Pages\ChativelPage;
+use Livewire\Component;
 
 class NewConversation extends Component
 {
     public $searchForNewConversation = '';
+
     public $chatables;
 
     public function mount()

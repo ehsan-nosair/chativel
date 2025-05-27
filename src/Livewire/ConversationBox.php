@@ -2,44 +2,40 @@
 
 namespace EhsanNosair\Chativel\Livewire;
 
-use DateTime;
-use Carbon\Carbon;
-use Livewire\Component;
-use Filament\Forms\Form;
-use Livewire\Attributes\On;
-use App\Events\ChativelPing;
-use App\Events\ChativelPong;
-use Livewire\WithFileUploads;
-use Livewire\Attributes\Computed;
-use Illuminate\Support\Collection;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Components\Textarea;
-use Illuminate\Support\Facades\Storage;
-use Filament\Notifications\Notification;
-use Filament\Forms\Components\FileUpload;
-use EhsanNosair\Chativel\Facades\Chativel;
-use Filament\Forms\Concerns\InteractsWithForms;
-use EhsanNosair\Chativel\Models\Chativel\Message;
-use EhsanNosair\Chativel\Events\ChativelMessageRead;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use EhsanNosair\Chativel\Events\ChativelMessageCreated;
+use EhsanNosair\Chativel\Events\ChativelMessageRead;
 use EhsanNosair\Chativel\Events\ChativelReadAllMessages;
-use EhsanNosair\Chativel\Models\Chativel\ChatableStatus;
+use EhsanNosair\Chativel\Facades\Chativel;
+use EhsanNosair\Chativel\Models\Chativel\Message;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ConversationBox extends Component implements HasForms
 {
     use InteractsWithForms;
 
     public $selectedConversation;
+
     public $otherParticipant;
+
     public $lastSeen;
 
     public Collection $conversationMessages;
+
     public $currentPage = 1;
 
     public $message = '';
+
     public $attachments = [];
+
     public $attachment_file_names = [];
 
     public function getListeners()
@@ -49,7 +45,7 @@ class ConversationBox extends Component implements HasForms
         $listeners[] = 'checkStatus';
 
         if ($this->selectedConversation) {
-            $listeners["echo:chativel.conversations,.message.created"] = 'newMessageListener';
+            $listeners['echo:chativel.conversations,.message.created'] = 'newMessageListener';
             $listeners["echo:chativel.conversations.{$this->selectedConversation->id},.message.read"] = 'messageReadListener';
             $listeners["echo:chativel.conversations.{$this->selectedConversation->id},.message.read.all"] = 'messageReadAllListener';
         }
@@ -62,7 +58,8 @@ class ConversationBox extends Component implements HasForms
         return $listeners;
     }
 
-    public function mount() {
+    public function mount()
+    {
         if ($this->selectedConversation) {
             $this->lastSeen = $this->otherParticipant->chatable->lastSeen;
             if ($this->selectedConversation) {
@@ -87,15 +84,15 @@ class ConversationBox extends Component implements HasForms
                 ->extraAttributes([
                     'class' => 'chativel-scrollbar',
                     'style' => 'max-height: 120px; overflow-y: auto;',
-                    'x-data' => '{}', 
-                    'x-on:keydown.enter.prevent' => '$wire.sendMessage()', 
+                    'x-data' => '{}',
+                    'x-on:keydown.enter.prevent' => '$wire.sendMessage()',
                 ]),
-            SpatieMediaLibraryFileUpload::make('attachments')   
+            SpatieMediaLibraryFileUpload::make('attachments')
                 ->hiddenLabel()
-                ->multiple() 
+                ->multiple()
                 ->panelLayout('grid')
-                ->imageEditor(fn() => config('chativel.image_editor'))
-                ->directory(fn() => config('chativel.attachments_store_directory') ?? 'attachments')
+                ->imageEditor(fn () => config('chativel.image_editor'))
+                ->directory(fn () => config('chativel.attachments_store_directory') ?? 'attachments')
                 ->acceptedFileTypes(config('chativel.allowed_mime_types'))
                 ->maxSize(config('chativel.max_attachment_size'))
                 ->minSize(config('chativel.min_attachment_size'))
@@ -106,14 +103,15 @@ class ConversationBox extends Component implements HasForms
                 ]),
         ]);
     }
-    
+
     public function sendMessage()
     {
         if ($this->message == '' && count($this->attachments) == 0) {
-            Notification::make() 
+            Notification::make()
                 ->title(__('Empty message cannot be sent.'))
                 ->danger()
-                ->send(); 
+                ->send();
+
             return;
         }
         $data = $this->form->getState();
@@ -148,11 +146,11 @@ class ConversationBox extends Component implements HasForms
     {
         if ($this->selectedConversation->id == $data['conversationId']) {
             $newMessage = Message::with(['statuses', 'media'])->find($data['messageId']);
-    
+
             Chativel::markMessageAsRead($newMessage);
-    
+
             broadcast(new ChativelMessageRead($this->selectedConversation->id, $newMessage->id))->toOthers();
-    
+
             $this->conversationMessages->prepend($newMessage);
         }
     }
@@ -162,18 +160,16 @@ class ConversationBox extends Component implements HasForms
         if (isset($data['messageId'])) {
             if ($this->selectedConversation->is_group) {
                 $atLeastOneNotRead = $this->conversationMessages->where('id', $data['messageId'])->first()
-                                          ?->statuses()->whereNull('read_at')->first();
-    
-                if (!$atLeastOneNotRead) {
+                    ?->statuses()->whereNull('read_at')->first();
+
+                if (! $atLeastOneNotRead) {
                     $this->conversationMessages->where('id', $data['messageId'])->each(function ($message) {
-                        $message['is_read'] = true; 
+                        $message['is_read'] = true;
                     });
                 }
-            }
-            else
-            {
+            } else {
                 $this->conversationMessages->where('id', $data['messageId'])->each(function ($message) {
-                    $message['is_read'] = true; 
+                    $message['is_read'] = true;
                 });
             }
         }
@@ -182,17 +178,15 @@ class ConversationBox extends Component implements HasForms
     public function messageReadAllListener()
     {
         if ($this->selectedConversation->is_group) {
-            $this->selectedConversation->messages()->whereDoesntHave('statuses', fn($query) => 
-                $query->whereNull('read_at')
+            $this->selectedConversation->messages()->whereDoesntHave('statuses', fn ($query) => $query->whereNull('read_at')
             )->each(function ($message) {
                 $this->conversationMessages->where('id', $message->id)->each(function ($message) {
-                    $message['is_read'] = true; 
+                    $message['is_read'] = true;
                 });
             });
-        }
-        else{
+        } else {
             $this->conversationMessages->each(function ($message) {
-                $message['is_read'] = true; 
+                $message['is_read'] = true;
             });
         }
     }
@@ -210,7 +204,7 @@ class ConversationBox extends Component implements HasForms
     {
         $media = Media::findOrFail($mediaId);
         $mediaPath = $media->getPath();
-    
+
         if (file_exists($mediaPath)) {
             return response()->download($mediaPath);
         } else {

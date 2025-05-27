@@ -18,8 +18,7 @@ class ChativelMessageRead implements ShouldBroadcast
     public function __construct(
         public int $conversationId,
         public int $messageId
-        )
-    {
+    ) {
         //
     }
 

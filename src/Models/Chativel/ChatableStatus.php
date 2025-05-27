@@ -12,6 +12,6 @@ class ChatableStatus extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'last_seen' => 'datetime'
-    ]; 
+        'last_seen' => 'datetime',
+    ];
 }

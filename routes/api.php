@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use EhsanNosair\Chativel\Http\Controllers\Api\ConversationController;
 use EhsanNosair\Chativel\Http\Middlware\SetLocale;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'auth:sanctum', SetLocale::class])
     ->prefix('api/chativel')

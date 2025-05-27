@@ -2,28 +2,28 @@
 
 namespace EhsanNosair\Chativel\Pages;
 
-use Filament\Pages\Page;
 use EhsanNosair\Chativel\Facades\Chativel;
-use Illuminate\Contracts\Support\Htmlable;
-use EhsanNosair\Chativel\Events\ChativelConnected;
 use EhsanNosair\Chativel\Models\Chativel\Conversation;
+use Filament\Pages\Page;
 
 class ChativelPage extends Page
 {
     protected static string $view = 'chativel::chativel.filament.pages.chativel-page';
 
     public $selectedConversation;
+
     public $otherParticipant;
+
     protected $listeners = [
-        'boradcastStatus'
+        'boradcastStatus',
     ];
 
     public static function getSlug(): string
     {
-        return config('chativel.slug') . '/{conversationId?}';
+        return config('chativel.slug').'/{conversationId?}';
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return '';
     }

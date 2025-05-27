@@ -3,29 +3,29 @@
 namespace EhsanNosair\Chativel\Models\Chativel;
 
 use Carbon\Carbon;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
 use EhsanNosair\Chativel\Facades\Chativel;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Conversation extends Model
 {
     use SoftDeletes;
-    
+
     protected $guarded = [];
 
     protected $casts = [
-        'last_action_date' => 'datetime'
-    ]; 
+        'last_action_date' => 'datetime',
+    ];
 
     protected $fillable = [];
 
     public function lastMessage(): Attribute
     {
         return Attribute::make(
-            get: function() {
+            get: function () {
                 switch ($this->last_action_type) {
                     case 'text':
                         return $this->last_action_content;
@@ -50,21 +50,23 @@ class Conversation extends Model
     public function displayName(): Attribute
     {
         $chatable = Chativel::getOtherParticipant($this)->chatable;
+
         return Attribute::make(
-            get: fn() => $this->is_group ? $this->name : ($chatable->displayColumn ?? $chatable[config('chativel.deafult_display_column')])
+            get: fn () => $this->is_group ? $this->name : ($chatable->displayColumn ?? $chatable[config('chativel.deafult_display_column')])
         );
     }
 
-    public function avatar(): Attribute {
+    public function avatar(): Attribute
+    {
         return Attribute::make(
-            get: fn() => $this->is_group ? asset('vendor/chativel/group-avatar.png') : ("https://ui-avatars.com/api/?name=" . Str::title($this->display_name))
+            get: fn () => $this->is_group ? asset('vendor/chativel/group-avatar.png') : ('https://ui-avatars.com/api/?name='.Str::title($this->display_name))
         );
     }
 
     public function formattedLastActionDate(): Attribute
     {
         return Attribute::make(
-            get: function(){
+            get: function () {
                 $carbonDate = Carbon::parse($this->last_action_date)->setTimeZone(config('chativel.timezone', 'app.timezone'));
 
                 if ($carbonDate->isToday()) {

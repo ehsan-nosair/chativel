@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class ConversationResource extends JsonResource
 {
     protected $participant_type;
+
     protected $participant_id;
 
     public function __construct($resource, $participant_type = null, $participant_id = null)
@@ -29,7 +30,7 @@ class ConversationResource extends JsonResource
         if ($this->participant_type && $this->participant_id) {
             $data = array_merge($data, [
                 'chatted_user_type' => $this->participant_type,
-                'chatted_user_id' => $this->participant_id
+                'chatted_user_id' => $this->participant_id,
             ]);
         }
 

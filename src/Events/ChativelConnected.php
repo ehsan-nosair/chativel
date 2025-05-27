@@ -28,7 +28,7 @@ class ChativelConnected implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('chativel.chatables.' . class_basename(auth()->user()) . '.' . auth()->id()),
+            new Channel('chativel.chatables.'.class_basename(auth()->user()).'.'.auth()->id()),
         ];
     }
 

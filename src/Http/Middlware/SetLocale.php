@@ -16,7 +16,7 @@ class SetLocale
     public function handle(Request $request, Closure $next): Response
     {
         $locale = $request->header('Accept-Language', config('chativel.default_language', 'en'));
-        
+
         if (in_array($locale, config('chativel.languages', []))) {
             app()->setLocale($locale);
         }

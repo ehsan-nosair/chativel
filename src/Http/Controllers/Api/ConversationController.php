@@ -3,40 +3,41 @@
 namespace EhsanNosair\Chativel\Http\Controllers\Api;
 
 use Carbon\Carbon;
+use EhsanNosair\Chativel\Events\ChativelMessageCreated;
+use EhsanNosair\Chativel\Events\ChativelMessageRead;
+use EhsanNosair\Chativel\Events\ChativelReadAllMessages;
+use EhsanNosair\Chativel\Facades\Chativel;
+use EhsanNosair\Chativel\Http\Resources\ChatableResource;
+use EhsanNosair\Chativel\Http\Resources\ConversationResource;
+use EhsanNosair\Chativel\Http\Resources\MessageResource;
+use EhsanNosair\Chativel\Models\Chativel\Conversation;
+use EhsanNosair\Chativel\Models\Chativel\Message;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
-use EhsanNosair\Chativel\Facades\Chativel;
-use EhsanNosair\Chativel\Models\Chativel\Message;
-use EhsanNosair\Chativel\Events\ChativelConnected;
-use EhsanNosair\Chativel\Events\ChativelMessageRead;
-use EhsanNosair\Chativel\Models\Chativel\Conversation;
-use EhsanNosair\Chativel\Events\ChativelMessageCreated;
-use EhsanNosair\Chativel\Events\ChativelReadAllMessages;
-use EhsanNosair\Chativel\Http\Resources\MessageResource;
-use EhsanNosair\Chativel\Http\Resources\ChatableResource;
-use EhsanNosair\Chativel\Http\Resources\ConversationResource;
 
 class ConversationController extends Controller
 {
     public function broadcastMyStatus()
     {
         Chativel::sayIamConnected();
+
         return response()->json([
-            'message' => "You say i'm connected"
+            'message' => "You say i'm connected",
         ], 200);
     }
 
     public function myConversations(Request $request)
     {
         Chativel::sayIamConnected();
+
         return ConversationResource::collection(Chativel::myConversationsPaginator($request->page ?? 1));
     }
 
     public function getConversation($conversationId)
     {
         $selectedConversation = Conversation::findOrFail($conversationId);
-        if (!Chativel::isParticipant($selectedConversation)) {
+        if (! Chativel::isParticipant($selectedConversation)) {
             return response()->json(['message' => 'You are not a participant in this conversation.'], 403);
         }
         $otherParticipant = Chativel::getOtherParticipant($selectedConversation);
@@ -44,9 +45,9 @@ class ConversationController extends Controller
         Chativel::sayIamConnected();
         Chativel::markAllMessagesAsRead($selectedConversation);
         broadcast(new ChativelReadAllMessages($selectedConversation->id))->toOthers();
-        
+
         return ConversationResource::make(
-            $selectedConversation, 
+            $selectedConversation,
             class_basename($otherParticipant->participant_type),
             $otherParticipant->participant_id
         );
@@ -55,7 +56,7 @@ class ConversationController extends Controller
     public function conversationMessages($conversationId)
     {
         $selectedConversation = Conversation::with(['participants', 'participants.chatable'])->findOrFail($conversationId);
-        if (!Chativel::isParticipant($selectedConversation)) {
+        if (! Chativel::isParticipant($selectedConversation)) {
             return response()->json(['message' => 'You are not a participant in this conversation.'], 403);
         }
 
@@ -67,7 +68,7 @@ class ConversationController extends Controller
     public function getOtherActivityStatus($conversationId)
     {
         $selectedConversation = Conversation::with(['participants', 'participants.chatable'])->findOrFail($conversationId);
-        if (!Chativel::isParticipant($selectedConversation)) {
+        if (! Chativel::isParticipant($selectedConversation)) {
             return response()->json(['message' => 'You are not a participant in this conversation.'], 403);
         }
         $otherParticipant = Chativel::getOtherParticipant($selectedConversation);
@@ -76,7 +77,7 @@ class ConversationController extends Controller
         if ($lastSeen) {
             if (Carbon::parse($lastSeen->last_seen)->setTimeZone(config('chativel.timezone', 'app.timezone'))->diffInSeconds(Carbon::now(config('chativel.timezone', 'app.timezone'))) <= 61) {
                 $status = __('Online');
-            }else{
+            } else {
                 $status = Carbon::parse($lastSeen->last_seen)->setTimeZone(config('chativel.timezone', 'app.timezone'))?->diffForHumans();
             }
         }
@@ -87,12 +88,12 @@ class ConversationController extends Controller
     public function getMessage($conversationId, $messageId)
     {
         $selectedConversation = Conversation::with(['participants', 'participants.chatable'])->findOrFail($conversationId);
-        if (!Chativel::isParticipant($selectedConversation)) {
+        if (! Chativel::isParticipant($selectedConversation)) {
             return response()->json(['message' => 'You are not a participant in this conversation.'], 403);
         }
         $message = Message::with(['statuses', 'media'])->find($messageId);
         Chativel::markMessageAsRead($message);
-    
+
         broadcast(new ChativelMessageRead($selectedConversation->id, $message->id))->toOthers();
 
         return MessageResource::make($message);
@@ -101,7 +102,7 @@ class ConversationController extends Controller
     public function sendMessage(Request $request, $conversationId)
     {
         $selectedConversation = Conversation::with(['participants', 'participants.chatable'])->findOrFail($conversationId);
-        if (!Chativel::isParticipant($selectedConversation)) {
+        if (! Chativel::isParticipant($selectedConversation)) {
             return response()->json(['message' => 'You are not a participant in this conversation.'], 403);
         }
         $otherParticipant = Chativel::getOtherParticipant($selectedConversation);
@@ -112,7 +113,7 @@ class ConversationController extends Controller
             'attachments.*' => ['required', 'file', 'mimes:jpeg,png,jpg,pdf,docx,xlsx', 'max:5000'],
         ]);
         $validator->after(function ($validator) use ($request) {
-            if (!$request->message && count($request->attachments ?? []) == 0) {
+            if (! $request->message && count($request->attachments ?? []) == 0) {
                 $validator->errors()->add('message', __('Empty message cannot be sent.'));
             }
         });
@@ -128,7 +129,7 @@ class ConversationController extends Controller
     public function chatablesSearch(Request $request)
     {
         $chatables = Chativel::chatablesSearch($request->searchTerm ?? '');
-        
+
         return ChatableResource::collection($chatables);
     }
 
@@ -140,19 +141,20 @@ class ConversationController extends Controller
         $validator = Validator::make([], []);
 
         $validator->after(function ($validator) use ($chatableType, $chatableId) {
-            if (!in_array($chatableType, config('chativel.chatables', []))) {
+            if (! in_array($chatableType, config('chativel.chatables', []))) {
                 $validator->errors()->add('type', __('Invalid type'));
-            }else{
+            } else {
                 $model = $chatableType::find($chatableId);
-                if (!$model) {
+                if (! $model) {
                     $validator->errors()->add('type', __('Chatable not found'));
                 }
-            } 
+            }
         });
 
         $validator->validate();
 
         $conversation = Chativel::getConversationWith($chatableType, $chatableId);
+
         return ConversationResource::make($conversation);
     }
 }

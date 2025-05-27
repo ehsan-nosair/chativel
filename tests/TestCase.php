@@ -2,20 +2,20 @@
 
 namespace EhsanNosair\Chativel\Tests;
 
-use Filament\FilamentServiceProvider;
-use Livewire\LivewireServiceProvider;
-use Filament\Forms\FormsServiceProvider;
-use Filament\Tables\TablesServiceProvider;
-use BladeUI\Icons\BladeIconsServiceProvider;
-use Filament\Actions\ActionsServiceProvider;
-use Filament\Support\SupportServiceProvider;
-use Filament\Widgets\WidgetsServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
-use Filament\Infolists\InfolistsServiceProvider;
-use EhsanNosair\Chativel\ChativelServiceProvider;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
+use EhsanNosair\Chativel\ChativelServiceProvider;
+use Filament\Actions\ActionsServiceProvider;
+use Filament\FilamentServiceProvider;
+use Filament\Forms\FormsServiceProvider;
+use Filament\Infolists\InfolistsServiceProvider;
 use Filament\Notifications\NotificationsServiceProvider;
+use Filament\Support\SupportServiceProvider;
+use Filament\Tables\TablesServiceProvider;
+use Filament\Widgets\WidgetsServiceProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Livewire\LivewireServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 class TestCase extends Orchestra

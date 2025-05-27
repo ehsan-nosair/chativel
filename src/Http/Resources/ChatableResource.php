@@ -2,8 +2,8 @@
 
 namespace EhsanNosair\Chativel\Http\Resources;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class ChatableResource extends JsonResource
 {
@@ -13,7 +13,7 @@ class ChatableResource extends JsonResource
             'id' => $this->id,
             'type' => get_class($this->resource),
             'display_name' => $this->display_column,
-            'avatar' => "https://ui-avatars.com/api/?name=" . Str::title($this->display_column),
+            'avatar' => 'https://ui-avatars.com/api/?name='.Str::title($this->display_column),
         ];
     }
 }

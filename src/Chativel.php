@@ -4,10 +4,11 @@ namespace EhsanNosair\Chativel;
 
 use Carbon\Carbon;
 use EhsanNosair\Chativel\Events\ChativelConnected;
-use EhsanNosair\Chativel\Models\Chativel\Conversation;
 use EhsanNosair\Chativel\Models\Chativel\ChatableStatus;
+use EhsanNosair\Chativel\Models\Chativel\Conversation;
 
-class Chativel {
+class Chativel
+{
     public function chatablesSearch(string $searchTerm)
     {
         $results = collect();
@@ -33,28 +34,26 @@ class Chativel {
 
     public function getConversationWith($chatableType, $chatableId)
     {
-        $conversation = Conversation::whereHas('participants', fn($query) => 
-            $query->where('participant_type', $chatableType)
-                  ->where('participant_id', $chatableId)
+        $conversation = Conversation::whereHas('participants', fn ($query) => $query->where('participant_type', $chatableType)
+            ->where('participant_id', $chatableId)
         )
-        ->whereHas('participants', fn($query) => 
-            $query->where('participant_type', auth()->user()::class)
-                  ->where('participant_id', auth()->id())
-        )
-        ->first();
+            ->whereHas('participants', fn ($query) => $query->where('participant_type', auth()->user()::class)
+                ->where('participant_id', auth()->id())
+            )
+            ->first();
 
-        if (!$conversation) {
+        if (! $conversation) {
             $conversation = Conversation::create([]);
             $conversation->participants()->createMany([
                 [
                     'participant_type' => $chatableType,
                     'participant_id' => $chatableId,
-                    'joined_at' => Carbon::now()
+                    'joined_at' => Carbon::now(),
                 ],
                 [
                     'participant_type' => auth()->user()::class,
                     'participant_id' => auth()->id(),
-                    'joined_at' => Carbon::now()
+                    'joined_at' => Carbon::now(),
                 ],
             ]
             );
@@ -83,9 +82,9 @@ class Chativel {
         $lastAttachment = null;
         foreach ($data['attachments'] ?? [] as $file) {
             $collection = $this->getAttachmentType($file->getMimeType());
-            $lastAttachment = $newMessage->addMedia($file->getRealPath()) 
+            $lastAttachment = $newMessage->addMedia($file->getRealPath())
                 ->usingFileName($file->getClientOriginalName())
-                ->toMediaCollection($collection); 
+                ->toMediaCollection($collection);
         }
 
         $newMessage->statuses()->create([
@@ -105,24 +104,24 @@ class Chativel {
         $last_action_content = null;
         if ($lastAttachment) {
             $last_action_type = $this->getAttachmentType($lastAttachment->mime_type);
-        }elseif ($message) {
+        } elseif ($message) {
             $last_action_type = 'text';
             $last_action_content = $message;
         }
 
         if ($last_action_type || $last_action_content) {
             $conversation->update([
-                'last_action_type' => $last_action_type, 
+                'last_action_type' => $last_action_type,
                 'last_action_content' => $last_action_content,
                 'last_action_participant_type' => auth()->user()::class,
                 'last_action_participant_id' => auth()->id(),
-                'last_action_date' => $message_date
+                'last_action_date' => $message_date,
             ]);
         }
     }
 
     public function getAttachmentType($mimeType)
-    {            
+    {
         if (str_starts_with($mimeType, 'image/')) {
             $type = 'image';
         } elseif (str_starts_with($mimeType, 'video/')) {
@@ -139,9 +138,8 @@ class Chativel {
         $conversation->messagesStatuses()
             ->where('user_type', auth()->user()::class)->where('user_id', auth()->id())
             ->update(['read_at' => Carbon::now()]);
-        
-        $conversation->messages()->whereDoesntHave('statuses', fn($query) => 
-            $query->whereNull('read_at')
+
+        $conversation->messages()->whereDoesntHave('statuses', fn ($query) => $query->whereNull('read_at')
         )->update(['is_read' => true]);
     }
 
@@ -151,7 +149,7 @@ class Chativel {
             ->update(['read_at' => Carbon::now()]);
 
         $atLeastOneNotRead = $message->statuses()->whereNull('read_at')->first();
-        if (!$atLeastOneNotRead) {
+        if (! $atLeastOneNotRead) {
             $message->update(['is_read' => true]);
         }
     }
@@ -159,13 +157,13 @@ class Chativel {
     public function myConversationsPaginator($page)
     {
         $conversations = Conversation::whereNotNull('last_action_date')
-            ->whereHas('participants', function($query){
+            ->whereHas('participants', function ($query) {
                 $query->where('participant_type', auth()->user()::class)->where('participant_id', auth()->id());
             })
-            ->with(['participants' => function($query){
-                $query->where(function($subquery){
+            ->with(['participants' => function ($query) {
+                $query->where(function ($subquery) {
                     $subquery->where('participant_type', '!=', auth()->user()::class)
-                          ->orWhere('participant_id', '!=', auth()->id());
+                        ->orWhere('participant_id', '!=', auth()->id());
                 })->with(['chatable']);
             }])
             ->latest('last_action_date')
@@ -184,10 +182,10 @@ class Chativel {
         ChatableStatus::updateOrCreate([
             'model_type' => auth()->user()::class,
             'model_id' => auth()->id(),
-        ],[
-            'last_seen' => Carbon::now()
+        ], [
+            'last_seen' => Carbon::now(),
         ]);
 
-        broadcast(new ChativelConnected())->toOthers();
+        broadcast(new ChativelConnected)->toOthers();
     }
 }

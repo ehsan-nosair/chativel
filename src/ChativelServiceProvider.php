@@ -2,14 +2,14 @@
 
 namespace EhsanNosair\Chativel;
 
-use Livewire\Livewire;
-use Filament\Support\Assets\Css;
-use Spatie\LaravelPackageTools\Package;
-use Filament\Support\Facades\FilamentAsset;
 use EhsanNosair\Chativel\Commands\ChativelCommand;
 use EhsanNosair\Chativel\Livewire\ConversationBox;
-use EhsanNosair\Chativel\Livewire\NewConversation;
 use EhsanNosair\Chativel\Livewire\ConversationsList;
+use EhsanNosair\Chativel\Livewire\NewConversation;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
+use Livewire\Livewire;
+use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class ChativelServiceProvider extends PackageServiceProvider
@@ -59,10 +59,10 @@ class ChativelServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            Css::make('chativel-styles', __DIR__ . '/../resources/css/chativel.css')->loadedOnRequest(),
+            Css::make('chativel-styles', __DIR__.'/../resources/css/chativel.css')->loadedOnRequest(),
         ];
     }
-    
+
     /**
      * @return array<string>
      */

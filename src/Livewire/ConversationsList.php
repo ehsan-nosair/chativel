@@ -2,24 +2,26 @@
 
 namespace EhsanNosair\Chativel\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Computed;
-use Illuminate\Support\Collection;
 use EhsanNosair\Chativel\Facades\Chativel;
 use EhsanNosair\Chativel\Pages\ChativelPage;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 
 class ConversationsList extends Component
 {
     public $selectedConversation;
+
     public Collection $conversations;
+
     public $currentPage = 1;
-    
+
     public function getListeners()
     {
         $listeners = [];
 
         $listeners[] = 'messageFromMe';
-        $listeners["echo:chativel.conversations,.message.created"] = 'newMessageListener';
+        $listeners['echo:chativel.conversations,.message.created'] = 'newMessageListener';
 
         return $listeners;
     }

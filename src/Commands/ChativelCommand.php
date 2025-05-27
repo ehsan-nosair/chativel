@@ -56,5 +56,4 @@ class ChativelCommand extends Command
         Artisan::call('migrate');
         $this->info('Migrations completed.');
     }
-
 }

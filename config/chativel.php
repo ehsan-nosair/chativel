@@ -1,6 +1,5 @@
 <?php
 
-
 return [
     'slug' => 'chativel',
 
@@ -24,13 +23,13 @@ return [
     'max_message_length' => 1000,
 
     'attachments_store_directory' => 'attachments',
-    
+
     'max_attachment_size' => 10000,
     'min_attachment_size' => 1,
-    
+
     'max_attachments_count' => 10,
     'min_attachments_count' => 0,
-    
+
     'image_editor' => true,
 
     'allowed_mime_types' => [
