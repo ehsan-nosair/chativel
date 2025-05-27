@@ -213,9 +213,6 @@
     @if ($selectedConversation)
         @script
         <script>
-            tt = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(tt);
-            
             setInterval(() => {
                 Livewire.dispatch('checkStatus');            
             }, 30000);        

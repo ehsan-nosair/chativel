@@ -10,5 +10,8 @@
     "select a conversation to start messaging" : "select a conversation to start messaging",
     "Online" : "Online",
     "Last seen" : "Last seen",
-    "Yesterday" : "Yesterday"
+    "Yesterday" : "Yesterday",
+    "image" : "image",
+    "video" : "video",
+    "file" : "file"
 } 

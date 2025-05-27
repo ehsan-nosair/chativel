@@ -3,7 +3,9 @@
 namespace EhsanNosair\Chativel;
 
 use Carbon\Carbon;
+use EhsanNosair\Chativel\Events\ChativelConnected;
 use EhsanNosair\Chativel\Models\Chativel\Conversation;
+use EhsanNosair\Chativel\Models\Chativel\ChatableStatus;
 
 class Chativel {
     public function chatablesSearch(string $searchTerm)
@@ -170,5 +172,22 @@ class Chativel {
             ->paginate(10, ['*'], 'page', $page);
 
         return $conversations;
+    }
+
+    public function isParticipant($conversation)
+    {
+        return $conversation->participants()->where('participant_type', auth()->user()::class)->where('participant_id', auth()->id())->exists();
+    }
+
+    public function sayIamConnected()
+    {
+        ChatableStatus::updateOrCreate([
+            'model_type' => auth()->user()::class,
+            'model_id' => auth()->id(),
+        ],[
+            'last_seen' => Carbon::now()
+        ]);
+
+        broadcast(new ChativelConnected())->toOthers();
     }
 }

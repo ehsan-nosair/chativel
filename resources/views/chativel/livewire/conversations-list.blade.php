@@ -33,7 +33,7 @@
 
                             @if (!$conversation->is_group)
                                 <x-filament::avatar
-                                    src="https://ui-avatars.com/api/?name={{ Str::title($conversation->display_name) }}"
+                                    src="{{ $conversation->avatar }}"
                                     alt="Profile" size="lg" 
                                 />
                             @else

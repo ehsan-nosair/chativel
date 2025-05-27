@@ -40,7 +40,7 @@ class ChativelPage extends Page
 
     public function mount(?int $conversationId = null)
     {
-        broadcast(new ChativelConnected())->toOthers();
+        Chativel::sayIamConnected();
         if ($conversationId) {
             $this->selectedConversation = Conversation::with(['participants', 'participants.chatable'])->findOrFail($conversationId);
             $this->otherParticipant = Chativel::getOtherParticipant($this->selectedConversation);
@@ -49,6 +49,6 @@ class ChativelPage extends Page
 
     public function boradcastStatus()
     {
-        broadcast(new ChativelConnected())->toOthers();
+        Chativel::sayIamConnected();
     }
 }

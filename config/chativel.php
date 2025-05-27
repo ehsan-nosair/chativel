@@ -18,6 +18,9 @@ return [
 
     'timezone' => 'Asia/Damascus',
 
+    'languages' => ['en', 'ar'],
+    'default_language' => 'ar',
+
     'max_message_length' => 1000,
 
     'attachments_store_directory' => 'attachments',

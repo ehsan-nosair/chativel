@@ -27,10 +27,12 @@ class ChativelServiceProvider extends PackageServiceProvider
          */
         $package
             ->name(static::$name)
+            ->hasAssets()
             ->hasConfigFile()
             ->hasViews(static::$viewNamespace)
             ->hasMigrations($this->getMigrations())
             ->hasTranslations()
+            ->hasRoute('api')
             ->hasCommand(ChativelCommand::class);
     }
 

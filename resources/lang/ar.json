@@ -10,5 +10,8 @@
     "select a conversation to start messaging" : "حدد محادثة لبدء المراسلة",
     "Online" : "متصل",
     "Last seen" : "آخر ظهور",
-    "Yesterday" : "البارحة"
+    "Yesterday" : "البارحة",
+    "image" : "صورة",
+    "video" : "فيديو",
+    "file" : "ملف"
 }

@@ -55,7 +55,8 @@ class ConversationBox extends Component implements HasForms
         }
 
         if ($this->otherParticipant) {
-            $listeners["echo:chativel.chatables.{$this->otherParticipant->participant_id},.connected"] = 'otherConnected';
+            $class_name = class_basename($this->otherParticipant->participant_type);
+            $listeners["echo:chativel.chatables.{$class_name}.{$this->otherParticipant->participant_id},.connected"] = 'checkStatus';
         }
 
         return $listeners;
@@ -193,21 +194,6 @@ class ConversationBox extends Component implements HasForms
             $this->conversationMessages->each(function ($message) {
                 $message['is_read'] = true; 
             });
-        }
-    }
-
-    public function otherConnected($data)
-    {
-        if ($data['type'] == $this->otherParticipant->participant_type) {
-            if ($this->lastSeen) {
-                $this->lastSeen->update(['last_seen' => Carbon::now()]);
-            }else{
-                $this->lastSeen = ChatableStatus::create([
-                    'model_type' => $this->otherParticipant->participant_type,
-                    'model_id' => $this->otherParticipant->participant_id,
-                    'last_seen' => Carbon::now()
-                ]);
-            }
         }
     }
 

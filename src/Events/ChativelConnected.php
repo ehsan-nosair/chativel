@@ -12,13 +12,12 @@ class ChativelConnected implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $type;
     /**
      * Create a new event instance.
      */
     public function __construct()
     {
-        $this->type = auth()->user()::class;
+        //
     }
 
     /**
@@ -29,7 +28,7 @@ class ChativelConnected implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('chativel.chatables.' . auth()->id()),
+            new Channel('chativel.chatables.' . class_basename(auth()->user()) . '.' . auth()->id()),
         ];
     }
 

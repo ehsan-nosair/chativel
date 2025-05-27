@@ -41,6 +41,12 @@ class ChativelCommand extends Command
             '--tag' => 'chativel-config',
         ]);
 
+        // Publish assets
+        Artisan::call('vendor:publish', [
+            '--provider' => 'EhsanNosair\Chativel\ChativelServiceProvider',
+            '--tag' => 'chativel-assets',
+        ]);
+
         $this->info('Assets published.');
     }
 

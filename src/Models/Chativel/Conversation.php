@@ -3,7 +3,9 @@
 namespace EhsanNosair\Chativel\Models\Chativel;
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use EhsanNosair\Chativel\Facades\Chativel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -47,9 +49,15 @@ class Conversation extends Model
 
     public function displayName(): Attribute
     {
-        $chatable = $this->participants->first()->chatable;
+        $chatable = Chativel::getOtherParticipant($this)->chatable;
         return Attribute::make(
             get: fn() => $this->is_group ? $this->name : ($chatable->displayColumn ?? $chatable[config('chativel.deafult_display_column')])
+        );
+    }
+
+    public function avatar(): Attribute {
+        return Attribute::make(
+            get: fn() => $this->is_group ? asset('vendor/chativel/group-avatar.png') : ("https://ui-avatars.com/api/?name=" . Str::title($this->display_name))
         );
     }
 
